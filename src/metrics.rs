@@ -1,3 +1,7 @@
+// Copyright (c) 2025, The Ruskit Authors
+// MIT License
+// All rights reserved.
+
 //! Defines configuration structures for application metrics.
 //!
 //! This module provides configuration options for metrics collection

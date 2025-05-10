@@ -1,3 +1,7 @@
+// Copyright (c) 2025, The Ruskit Authors
+// MIT License
+// All rights reserved.
+
 //! Provides environment types and utilities for environment-specific configuration.
 //!
 //! This module defines the `Environment` enum and related functionality for

@@ -1,3 +1,7 @@
+// Copyright (c) 2025, The Ruskit Authors
+// MIT License
+// All rights reserved.
+
 //! Defines configuration structures for distributed tracing.
 //!
 //! This module provides configuration options for collecting and exporting

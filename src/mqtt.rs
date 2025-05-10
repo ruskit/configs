@@ -1,3 +1,7 @@
+// Copyright (c) 2025, The Ruskit Authors
+// MIT License
+// All rights reserved.
+
 //! Defines configuration structures for MQTT message brokers.
 //!
 //! This module provides configuration options for connecting to and
@@ -252,7 +256,7 @@ pub struct MQTTConnectionConfigs {
 /// use configs::{MQTTConfigs, MQTTConnectionConfigs};
 ///
 /// let mut mqtt_config = MQTTConfigs::default();
-/// 
+///
 /// // Enable multi-broker mode
 /// mqtt_config.multi_broker_enabled = true;
 ///

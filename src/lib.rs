@@ -1,7 +1,11 @@
+// Copyright (c) 2025, The Ruskit Authors
+// MIT License
+// All rights reserved.
+
 //! # Configs
-//! 
+//!
 //! A configuration management crate for Rust applications in the Ruskit ecosystem.
-//! 
+//!
 //! This crate provides a collection of configuration structures for various services and components,
 //! making it easy to configure and manage application settings across different environments.
 //!

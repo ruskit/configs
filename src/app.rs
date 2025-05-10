@@ -1,3 +1,7 @@
+// Copyright (c) 2025, The Ruskit Authors
+// MIT License
+// All rights reserved.
+
 //! Defines the core application configuration settings.
 
 use crate::{Environment, SecretsManagerKind};

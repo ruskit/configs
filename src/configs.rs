@@ -1,17 +1,23 @@
+// Copyright (c) 2025, The Ruskit Authors
+// MIT License
+// All rights reserved.
+
 //! Provides the central configuration aggregation structures and traits.
 //!
-//! This module defines the main `Configs` structure that aggregates all service-specific 
+//! This module defines the main `Configs` structure that aggregates all service-specific
 //! configurations, as well as the `DynamicConfigs` trait for extensibility.
 
 use crate::{
-    kafka::KafkaConfigs, AppConfigs, AwsConfigs, DynamoConfigs, HealthReadinessConfigs, IdentityServerConfigs, InfluxConfigs, MQTTConfigs, MetricConfigs, PostgresConfigs, RabbitMQConfigs, SqliteConfigs, TraceConfigs
+    AppConfigs, AwsConfigs, DynamoConfigs, HealthReadinessConfigs, IdentityServerConfigs,
+    InfluxConfigs, MQTTConfigs, MetricConfigs, PostgresConfigs, RabbitMQConfigs, SqliteConfigs,
+    TraceConfigs, kafka::KafkaConfigs,
 };
 
 /// # Configs
 ///
 /// The central configuration container that aggregates all service configurations.
 ///
-/// This generic structure holds configuration objects for all supported services and components, 
+/// This generic structure holds configuration objects for all supported services and components,
 /// providing a single point of access for application configuration. The generic parameter `T`
 /// allows for extension with application-specific configuration via the `DynamicConfigs` trait.
 ///

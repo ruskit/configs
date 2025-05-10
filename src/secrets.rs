@@ -1,3 +1,7 @@
+// Copyright (c) 2025, The Ruskit Authors
+// MIT License
+// All rights reserved.
+
 //! Defines types for secret management configuration.
 //!
 //! This module provides enums and utilities for configuring secret management
