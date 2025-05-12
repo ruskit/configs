@@ -38,8 +38,6 @@ pub enum MetricExporterKind {
     Stdout,
     /// Export metrics using OpenTelemetry Protocol over gRPC
     OtlpGrpc,
-    /// Expose metrics in Prometheus format via HTTP endpoint
-    Prometheus,
 }
 
 impl FromStr for MetricExporterKind {
@@ -59,7 +57,6 @@ impl FromStr for MetricExporterKind {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_lowercase().as_str() {
             "otlp" | "otlp-grpc" | "grpc" => Ok(MetricExporterKind::OtlpGrpc),
-            "prom" | "prometheus" => Ok(MetricExporterKind::Prometheus),
             _ => Ok(MetricExporterKind::Stdout),
         }
     }
