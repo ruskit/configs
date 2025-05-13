@@ -196,25 +196,39 @@ impl Display for MQTTTransport {
 /// ```
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct MQTTConnectionConfigs {
+    /// ENV KEY: "TAG"
+    ///
     /// A unique identifier for this connection configuration (Default: "default")
     pub tag: String,
 
+    /// ENV KEY: "MQTT_BROKER_KIND"
+    ///
     /// The type of MQTT broker (Default: MQTTBrokerKind::Default)
     #[serde(default)]
     pub broker_kind: MQTTBrokerKind,
 
+    /// ENV KEY: "MQTT_HOST"
+    ///
     /// The MQTT broker host (Default: "localhost")
     pub host: String,
 
+    /// ENV KEY: "MQTT_TRANSPORT"
+    ///
     /// The transport protocol to use (Default: MQTTTransport::TCP)
     pub transport: MQTTTransport,
 
+    /// ENV KEY: "MQTT_PORT"
+    ///
     /// The MQTT broker port (Default: 1883)
     pub port: u64,
 
+    /// ENV KEY: "MQTT_USER"
+    ///
     /// Username for MQTT authentication (Default: "mqtt_user")
     pub user: String,
 
+    /// ENV KEY: "MQTT_PASSWORD"
+    ///
     /// Password for MQTT authentication (Default: "password")
     pub password: String,
 
@@ -224,18 +238,24 @@ pub struct MQTTConnectionConfigs {
     #[serde(default)]
     pub device_name: String,
 
+    /// ENV KEY: "MQTT_CA_CERT_PATH"
+    ///
     /// Path to the root CA certificate file (Default: "")
     ///
     /// Used with Public Cloud Brokers
     #[serde(default)]
     pub root_ca_path: String,
 
+    /// ENV KEY: "MQTT_CERT_PATH"
+    ///
     /// Path to the client certificate file (Default: "")
     ///
     /// Used with Public Cloud Brokers
     #[serde(default)]
     pub cert_path: String,
 
+    /// ENV KEY: "MQTT_PRIVATE_KEY_PATH"
+    ///
     /// Path to the private key file (Default: "")
     ///
     /// Used with Public Cloud Brokers
@@ -266,10 +286,80 @@ pub struct MQTTConnectionConfigs {
 /// ```
 #[derive(Debug, Clone)]
 pub struct MQTTConfigs {
+    /// ENV KEY: "MQTT_MULTI_BROKER_ENABLED"
+    ///
     /// Whether multi-broker mode is enabled (Default: false)
     pub multi_broker_enabled: bool,
+    /// ENV KEY: "MQTT_BROKERS"
+    ///
+    /// JSON string containing a list of MQTT brokers (Default: "[]")
+    pub brokers: String,
+    ///
     /// List of MQTT connection configurations
     pub connection_configs: Vec<MQTTConnectionConfigs>,
+}
+
+pub const MQTT_MULTI_BROKER_ENABLED_ENV_KEY: &str = "MQTT_MULTI_BROKER_ENABLED";
+pub const MQTT_BROKERS_ENV_KEY: &str = "MQTT_BROKERS";
+pub const MQTT_BROKER_KIND_ENV_KEY: &str = "MQTT_BROKER_KIND";
+pub const MQTT_HOST_ENV_KEY: &str = "MQTT_HOST";
+pub const MQTT_TRANSPORT_ENV_KEY: &str = "MQTT_TRANSPORT";
+pub const MQTT_PORT_ENV_KEY: &str = "MQTT_PORT";
+pub const MQTT_USER_ENV_KEY: &str = "MQTT_USER";
+pub const MQTT_PASSWORD_ENV_KEY: &str = "MQTT_PASSWORD";
+pub const MQTT_CA_CERT_PATH_ENV_KEY: &str = "MQTT_CA_CERT_PATH";
+pub const MQTT_CERT_PATH_ENV_KEY: &str = "MQTT_CERT_PATH";
+pub const MQTT_PRIVATE_KEY_PATH_ENV_KEY: &str = "MQTT_PRIVATE_KEY_PATH";
+
+impl MQTTConfigs {
+    /// Creates a new `MQTTConfigs` with environment variables.
+    ///
+    /// This method initializes the MQTT configuration with environment variables
+    /// for multi-broker mode and the list of brokers.
+    ///
+    /// ## Returns
+    ///
+    /// A new `MQTTConfigs` with environment variables.
+    pub fn new() -> Self {
+        let mut cfgs = Self::default();
+
+        cfgs.multi_broker_enabled = std::env::var(MQTT_MULTI_BROKER_ENABLED_ENV_KEY)
+            .ok()
+            .and_then(|v| v.parse::<bool>().ok())
+            .unwrap_or(cfgs.multi_broker_enabled);
+
+        if !cfgs.multi_broker_enabled {
+            let mut conn_configs = MQTTConnectionConfigs::default();
+
+            conn_configs.tag = "default".into();
+            conn_configs.broker_kind = std::env::var(MQTT_BROKER_KIND_ENV_KEY)
+                .ok()
+                .map(|v| MQTTBrokerKind::from(&v))
+                .unwrap_or(conn_configs.broker_kind);
+            conn_configs.host = std::env::var(MQTT_HOST_ENV_KEY).unwrap_or(conn_configs.host);
+            conn_configs.transport = std::env::var(MQTT_TRANSPORT_ENV_KEY)
+                .ok()
+                .map(|v| MQTTTransport::from(&v))
+                .unwrap_or(conn_configs.transport);
+            conn_configs.port = std::env::var(MQTT_PORT_ENV_KEY)
+                .ok()
+                .and_then(|v| v.parse::<u64>().ok())
+                .unwrap_or(conn_configs.port);
+            conn_configs.user = std::env::var(MQTT_USER_ENV_KEY).unwrap_or(conn_configs.user);
+            conn_configs.password =
+                std::env::var(MQTT_PASSWORD_ENV_KEY).unwrap_or(conn_configs.password);
+            conn_configs.root_ca_path =
+                std::env::var(MQTT_CA_CERT_PATH_ENV_KEY).unwrap_or(conn_configs.root_ca_path);
+            conn_configs.cert_path =
+                std::env::var(MQTT_CERT_PATH_ENV_KEY).unwrap_or(conn_configs.cert_path);
+            conn_configs.private_key_path = std::env::var(MQTT_PRIVATE_KEY_PATH_ENV_KEY)
+                .unwrap_or(conn_configs.private_key_path);
+        }
+
+        cfgs.brokers = std::env::var(MQTT_BROKERS_ENV_KEY).unwrap_or(cfgs.brokers);
+
+        cfgs
+    }
 }
 
 impl Default for MQTTConfigs {
@@ -279,6 +369,7 @@ impl Default for MQTTConfigs {
 
         Self {
             multi_broker_enabled: false,
+            brokers: "[]".into(),
             connection_configs: vec![cfg],
         }
     }

@@ -26,10 +26,42 @@
 /// ```
 #[derive(Debug, Clone)]
 pub struct HealthReadinessConfigs {
+    /// ENV KEY: "HEALTH_READINESS_PORT"
+    ///
     /// The port to listen on for health and readiness check requests (Default: 8888)
     pub port: u64,
+    /// ENV KEY: "ENABLE_HEALTH_READINESS"
+    ///
     /// Whether the health and readiness check server should be enabled (Default: false)
     pub enable: bool,
+}
+
+pub const HEALTH_READINESS_PORT_ENV_KEY: &str = "HEALTH_READINESS_PORT";
+pub const ENABLE_HEALTH_READINESS_ENV_KEY: &str = "ENABLE_HEALTH_READINESS";
+
+impl HealthReadinessConfigs {
+    /// Creates a new `HealthReadinessConfigs` with environments variables.
+    ///
+    /// This method initializes the health and readiness configuration with environments variables
+    /// for the port and enable flag.
+    ///
+    /// ## Returns
+    ///
+    /// A new `HealthReadinessConfigs` with environments variables.
+    pub fn new() -> Self {
+        let mut cfgs = Self::default();
+
+        cfgs.port = std::env::var(HEALTH_READINESS_PORT_ENV_KEY)
+            .ok()
+            .and_then(|v| v.parse::<u64>().ok())
+            .unwrap_or(cfgs.port);
+        cfgs.enable = std::env::var(ENABLE_HEALTH_READINESS_ENV_KEY)
+            .ok()
+            .and_then(|v| v.parse::<bool>().ok())
+            .unwrap_or(cfgs.enable);
+
+        cfgs
+    }
 }
 
 impl Default for HealthReadinessConfigs {

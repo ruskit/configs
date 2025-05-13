@@ -7,10 +7,11 @@
 //! This module defines the main `Configs` structure that aggregates all service-specific
 //! configurations, as well as the `DynamicConfigs` trait for extensibility.
 
-use crate::{
-    AppConfigs, AwsConfigs, DynamoConfigs, HealthReadinessConfigs, IdentityServerConfigs,
-    InfluxConfigs, MQTTConfigs, MetricConfigs, PostgresConfigs, RabbitMQConfigs, SqliteConfigs,
-    TraceConfigs, kafka::KafkaConfigs,
+use crate::otlp;
+
+use super::{
+    app, aws, dynamic::DynamicConfigs, dynamo, health_readiness, identity_server, influx, kafka,
+    mqtt, postgres, rabbitmq, sqlite,
 };
 
 /// # Configs
@@ -39,83 +40,31 @@ use crate::{
 #[derive(Debug, Clone, Default)]
 pub struct Configs<T: DynamicConfigs> {
     /// Core application configuration
-    pub app: AppConfigs,
+    pub app: app::AppConfigs,
+    /// OTLP (OpenTelemetry) configuration
+    pub otlp: otlp::OTLPConfigs,
     /// Identity server configuration
-    pub identity: IdentityServerConfigs,
+    pub identity: identity_server::IdentityServerConfigs,
     /// MQTT broker configuration
-    pub mqtt: MQTTConfigs,
+    pub mqtt: mqtt::MQTTConfigs,
     /// RabbitMQ broker configuration
-    pub rabbitmq: RabbitMQConfigs,
+    pub rabbitmq: rabbitmq::RabbitMQConfigs,
     /// Kafka broker configuration
-    pub kafka: KafkaConfigs,
-    /// Metrics configuration
-    pub metric: MetricConfigs,
-    /// Distributed tracing configuration
-    pub trace: TraceConfigs,
+    pub kafka: kafka::KafkaConfigs,
     /// PostgreSQL database configuration
-    pub postgres: PostgresConfigs,
+    pub postgres: postgres::PostgresConfigs,
     /// DynamoDB configuration
-    pub dynamo: DynamoConfigs,
+    pub dynamo: dynamo::DynamoConfigs,
     /// SQLite database configuration
-    pub sqlite: SqliteConfigs,
+    pub sqlite: sqlite::SqliteConfigs,
     /// InfluxDB configuration
-    pub influx: InfluxConfigs,
+    pub influx: influx::InfluxConfigs,
     /// AWS services configuration
-    pub aws: AwsConfigs,
+    pub aws: aws::AwsConfigs,
     /// Health and readiness check configuration
-    pub health_readiness: HealthReadinessConfigs,
+    pub health_readiness: health_readiness::HealthReadinessConfigs,
     /// Application-specific dynamic configuration
     pub dynamic: T,
-}
-
-/// # DynamicConfigs
-///
-/// A trait for application-specific configuration extensions.
-///
-/// Implementors of this trait can provide custom configuration loading logic
-/// for application-specific settings that aren't covered by the standard
-/// configuration objects.
-///
-/// ## Required Methods
-///
-/// * `load` - Load configuration values from environment variables, files, etc.
-pub trait DynamicConfigs: Default {
-    /// Load configuration values from the environment or other sources.
-    fn load(&mut self);
-}
-
-/// # Empty
-///
-/// A placeholder implementation of `DynamicConfigs` that doesn't add any configuration.
-///
-/// This type can be used when no additional configuration beyond the standard
-/// service configurations is needed.
-#[derive(Debug, Default, Clone, Copy)]
-pub struct Empty;
-
-impl DynamicConfigs for Empty {
-    fn load(&mut self) {}
-}
-
-impl<T> Configs<T>
-where
-    T: DynamicConfigs,
-{
-    /// Generates a RabbitMQ connection URI from the RabbitMQ configuration.
-    ///
-    /// ## Returns
-    ///
-    /// A formatted connection string in the format `amqp://user:password@host:port/vhost`.
-    pub fn rabbitmq_uri(&self) -> String {
-        format!(
-            "amqp://{}:{}@{}:{}{}",
-            self.rabbitmq.user,
-            self.rabbitmq.password,
-            self.rabbitmq.host,
-            self.rabbitmq.port,
-            self.rabbitmq.vhost
-        )
-    }
 }
 
 #[cfg(test)]
@@ -124,25 +73,7 @@ mod tests {
 
     #[test]
     fn should_return_app_addr() {
-        let cfg = AppConfigs::default();
-
+        let cfg = app::AppConfigs::default();
         assert_eq!(cfg.app_addr(), format!("{}:{}", cfg.host, cfg.port))
-    }
-
-    #[test]
-    fn should_return_amqp_uri() {
-        let cfg = Configs::<Empty>::default();
-
-        assert_eq!(
-            cfg.rabbitmq_uri(),
-            format!(
-                "amqp://{}:{}@{}:{}{}",
-                cfg.rabbitmq.user,
-                cfg.rabbitmq.password,
-                cfg.rabbitmq.host,
-                cfg.rabbitmq.port,
-                cfg.rabbitmq.vhost
-            )
-        )
     }
 }

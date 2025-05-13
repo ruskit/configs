@@ -24,10 +24,24 @@
 /// ```
 #[derive(Debug, Clone, Default)]
 pub struct SqliteConfigs {
+    /// ENV KEY: "SQLITE_FILE_NAME"
+    ///
     /// The SQLite database file path (Default: "local.db")
     pub file: String,
-    /// The SQLite username (Default: "postgres")
-    pub user: String,
-    /// The SQLite password (Default: "postgres")
-    pub password: String,
+}
+
+pub const SQLITE_FILE_NAME_ENV_KEY: &str = "SQLITE_FILE_NAME";
+
+impl SqliteConfigs {
+    /// Creates a new `SqliteConfigs` instance from environment variables.
+    ///
+    /// This method initializes the SQLite configuration from the environment variable
+    /// for the database file path.
+    pub fn new() -> Self {
+        let mut cfgs = Self::default();
+
+        cfgs.file = std::env::var(SQLITE_FILE_NAME_ENV_KEY).unwrap_or(cfgs.file);
+
+        cfgs
+    }
 }
