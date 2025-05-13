@@ -222,7 +222,7 @@ pub struct MQTTConnectionConfigs {
     /// The MQTT broker port (Default: 1883)
     pub port: u64,
 
-    /// ENV KEY: "MQTT_TIMEOUT"
+    /// ENV KEY: "MQTT_USER"
     ///
     /// Username for MQTT authentication (Default: "mqtt_user")
     pub user: String,
