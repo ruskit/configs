@@ -41,7 +41,7 @@ pub struct PostgresConfigs {
     ///
     /// The PostgreSQL server port (Default: 0)
     pub port: u16,
-    /// ENV KEY : "POSTGRES_DB"
+    /// ENV KEY: "POSTGRES_DB"
     ///
     /// The PostgreSQL database name (Default: "")
     pub db: String,
