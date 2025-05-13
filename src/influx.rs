@@ -24,17 +24,44 @@
 /// ```
 #[derive(Debug, Clone, Default)]
 pub struct InfluxConfigs {
+    /// ENV KEY: "INFLUX_HOST"
+    ///
     /// The InfluxDB server host URL (Default: "http://localhost")
     pub host: String,
+    /// ENV KEY: "INFLUX_PORT"
+    ///
     /// The InfluxDB server port (Default: 8086)
     pub port: u64,
+    /// ENV KEY: "INFLUX_BUCKET"
+    ///
     /// The InfluxDB bucket to use (Default: "default")
     pub bucket: String,
+    /// ENV KEY: "INFLUX_TOKEN"
+    ///
     /// The authentication token for InfluxDB (Default: "token")
     pub token: String,
 }
 
+pub const INFLUX_HOST_ENV_KEY: &str = "INFLUX_HOST";
+pub const INFLUX_PORT_ENV_KEY: &str = "INFLUX_PORT";
+pub const INFLUX_BUCKET_ENV_KEY: &str = "INFLUX_BUCKET";
+pub const INFLUX_TOKEN_ENV_KEY: &str = "INFLUX_TOKEN";
+
 impl InfluxConfigs {
+    pub fn new() -> Self {
+        let mut cfgs = Self::default();
+
+        cfgs.host = std::env::var(INFLUX_HOST_ENV_KEY).unwrap_or(cfgs.host);
+        cfgs.port = std::env::var(INFLUX_PORT_ENV_KEY)
+            .ok()
+            .and_then(|v| v.parse::<u64>().ok())
+            .unwrap_or(cfgs.port);
+        cfgs.bucket = std::env::var(INFLUX_BUCKET_ENV_KEY).unwrap_or(cfgs.bucket);
+        cfgs.token = std::env::var(INFLUX_TOKEN_ENV_KEY).unwrap_or(cfgs.token);
+
+        cfgs
+    }
+
     /// Returns the formatted server address (host:port).
     ///
     /// ## Returns
