@@ -1,5 +1,29 @@
+// Copyright (c) 2025, The Ruskit Authors
+// MIT License
+// All rights reserved.
+
+//! Defines configuration structures for OpenTelemetry (OTLP) observability.
+//!
+//! This module provides configuration options for connecting to
+//! and working with OpenTelemetry exporters for metrics and traces.
+
 use std::time::Duration;
 
+/// Configuration structure for OpenTelemetry exporters.
+///
+/// This structure defines the connection parameters and settings for working
+/// with OpenTelemetry exporters, including endpoint, authentication, timeouts,
+/// and sampling rates.
+///
+/// ## Examples
+///
+/// ```
+/// use configs::OTLPConfigs;
+///
+/// let mut otlp_config = OTLPConfigs::default();
+/// otlp_config.traces_enabled = true;
+/// otlp_config.metrics_enabled = true;
+/// ```
 #[derive(Debug, Clone)]
 pub struct OTLPConfigs {
     /// ENV KEY: "OTLP_EXPORTER_ENDPOINT"
