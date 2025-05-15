@@ -9,6 +9,15 @@
 
 use std::time::Duration;
 
+#[derive(Debug, Clone, Default)]
+pub enum OTLPExporterType {
+    /// OpenTelemetry Protocol (OTLP) exporter.
+    Otlp,
+    /// Standard output (stdout) exporter.
+    #[default]
+    Stdout,
+}
+
 /// Configuration structure for OpenTelemetry exporters.
 ///
 /// This structure defines the connection parameters and settings for working
@@ -26,6 +35,11 @@ use std::time::Duration;
 /// ```
 #[derive(Debug, Clone)]
 pub struct OTLPConfigs {
+    /// ENV KEY: "OTLP_EXPORTER_TYPE"
+    ///
+    /// The type of the OTLP exporter. Possible values are "otlp" or "stdout".
+    pub exporter_type: OTLPExporterType,
+
     /// ENV KEY: "OTLP_EXPORTER_ENDPOINT"
     ///
     /// The endpoint for the OTLP service.
@@ -56,6 +70,7 @@ pub struct OTLPConfigs {
     pub traces_enabled: bool,
 }
 
+pub const OTLP_EXPORTER_TYPE_ENV_KEY: &str = "OTLP_EXPORTER_TYPE";
 pub const OTLP_EXPORTER_ENDPOINT_ENV_KEY: &str = "OTLP_EXPORTER_ENDPOINT";
 pub const OTLP_ACCESS_KEY_ENV_KEY: &str = "OTLP_ACCESS_KEY";
 pub const OTLP_EXPORTER_TIMEOUT_ENV_KEY: &str = "OTLP_EXPORTER_TIMEOUT";
@@ -69,6 +84,10 @@ impl OTLPConfigs {
     pub fn new() -> Self {
         let mut cfg = Self::default();
 
+        cfg.exporter_type = std::env::var(OTLP_EXPORTER_TYPE_ENV_KEY)
+            .unwrap_or("stdout".to_string())
+            .as_str()
+            .into();
         cfg.endpoint = std::env::var(OTLP_EXPORTER_ENDPOINT_ENV_KEY).unwrap_or(cfg.endpoint);
         cfg.access_key = std::env::var(OTLP_ACCESS_KEY_ENV_KEY).unwrap_or(cfg.access_key);
         cfg.exporter_timeout = std::env::var(OTLP_EXPORTER_TIMEOUT_ENV_KEY)
@@ -101,6 +120,7 @@ impl OTLPConfigs {
 impl Default for OTLPConfigs {
     fn default() -> Self {
         Self {
+            exporter_type: OTLPExporterType::default(),
             endpoint: "http://localhost:4317".to_string(),
             access_key: "token".to_string(),
             exporter_timeout: Duration::from_secs(60),
@@ -108,6 +128,24 @@ impl Default for OTLPConfigs {
             exporter_rate_base: 0.8,
             metrics_enabled: false,
             traces_enabled: false,
+        }
+    }
+}
+
+impl From<&str> for OTLPExporterType {
+    fn from(value: &str) -> Self {
+        match value.to_uppercase().as_str() {
+            "otlp" => OTLPExporterType::Otlp,
+            _ => OTLPExporterType::Stdout,
+        }
+    }
+}
+
+impl From<&String> for OTLPExporterType {
+    fn from(value: &String) -> Self {
+        match value.to_uppercase().as_str() {
+            "otlp" => OTLPExporterType::Otlp,
+            _ => OTLPExporterType::Stdout,
         }
     }
 }
