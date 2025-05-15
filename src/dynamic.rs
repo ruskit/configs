@@ -1,3 +1,6 @@
+use secrets_manager::SecretClient;
+use std::sync::Arc;
+
 /// # DynamicConfigs
 ///
 /// A trait for application-specific configuration extensions.
@@ -11,7 +14,7 @@
 /// * `load` - Load configuration values from environment variables, files, etc.
 pub trait DynamicConfigs: Default {
     /// Load configuration values from the environment or other sources.
-    fn load(&mut self);
+    fn load(&mut self, secret_client: Arc<dyn SecretClient>);
 }
 
 /// # Empty
@@ -24,5 +27,5 @@ pub trait DynamicConfigs: Default {
 pub struct Empty;
 
 impl DynamicConfigs for Empty {
-    fn load(&mut self) {}
+    fn load(&mut self, _: Arc<dyn SecretClient>) {}
 }

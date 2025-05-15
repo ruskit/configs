@@ -143,7 +143,6 @@ impl<T: DynamicConfigs> Configs<T> {
         cfg.aws = aws::AwsConfigs::new();
         cfg.health_readiness = health_readiness::HealthReadinessConfigs::new();
         cfg.dynamic = T::default();
-        cfg.dynamic.load();
 
         cfg
     }
