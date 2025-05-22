@@ -31,6 +31,12 @@ pub struct AppConfigs {
     ///
     ///Default: Environment::Local
     pub env: Environment,
+
+    ///ENV KEY: "NAMESPACE"
+    ///
+    ///Default: "local"
+    pub namespace: String,
+
     ///ENV KEY: "SECRET_MANAGER"
     ///
     ///Default:false
@@ -58,6 +64,7 @@ pub struct AppConfigs {
 }
 
 pub const APP_NAME_ENV_KEY: &str = "APP_NAME";
+pub const APP_NAMESPACE_ENV_KEY: &str = "NAMESPACE";
 pub const SECRET_MANAGER_ENV_KEY: &str = "SECRET_MANAGER";
 pub const SECRET_KEY_ENV_KEY: &str = "SECRET_KEY";
 pub const HOST_NAME_ENV_KEY: &str = "HOST_NAME";
@@ -70,6 +77,7 @@ impl AppConfigs {
 
         cfg.name = std::env::var(APP_NAME_ENV_KEY).unwrap_or(cfg.name);
         cfg.env = Environment::from_rust_env();
+        cfg.namespace = std::env::var(APP_NAMESPACE_ENV_KEY).unwrap_or(cfg.namespace);
         cfg.secret_manager = std::env::var(SECRET_MANAGER_ENV_KEY)
             .unwrap_or("None".into())
             .as_str()
@@ -104,6 +112,7 @@ impl Default for AppConfigs {
         Self {
             name: "default-name".to_owned(),
             env: Environment::Local,
+            namespace: "local".to_owned(),
             secret_manager: SecretsManagerKind::default(),
             secret_key: "context".to_owned(),
             host: "0.0.0.0".to_owned(),
