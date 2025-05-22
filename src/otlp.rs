@@ -60,6 +60,14 @@ pub struct OTLPConfigs {
     ///
     /// The base rate for the OTLP service.
     pub exporter_rate_base: f64,
+    /// ENV KEY: "OTLP_METRIC_EXPORTER_RATE_BASE"
+    ///
+    /// The base rate for the OTLP Metric service.
+    pub metric_exporter_rate_base: f64,
+    /// ENV KEY: "OTLP_TRACE_EXPORTER_RATE_BASE"
+    ///
+    /// The base rate for the OTLP Trace service.
+    pub trace_exporter_rate_base: f64,
     /// ENV KEY: "OTLP_METRICS_ENABLED"
     ///
     /// The flag to enable or disable metrics.
@@ -76,6 +84,8 @@ pub const OTLP_ACCESS_KEY_ENV_KEY: &str = "OTLP_ACCESS_KEY";
 pub const OTLP_EXPORTER_TIMEOUT_ENV_KEY: &str = "OTLP_EXPORTER_TIMEOUT";
 pub const OTLP_EXPORTER_INTERVAL_ENV_KEY: &str = "OTLP_EXPORTER_INTERVAL";
 pub const OTLP_EXPORTER_RATE_BASE_ENV_KEY: &str = "OTLP_EXPORTER_RATE_BASE";
+pub const OTLP_METRIC_EXPORTER_RATE_BASE_ENV_KEY: &str = "OTLP_METRIC_EXPORTER_RATE_BASE";
+pub const OTLP_TRACE_EXPORTER_RATE_BASE_ENV_KEY: &str = "OTLP_TRACE_EXPORTER_RATE_BASE";
 pub const OTLP_METRICS_ENABLED_ENV_KEY: &str = "OTLP_METRICS_ENABLED";
 pub const OTLP_TRACES_ENABLED_KEY_ENV_KEY: &str = "OTLP_TRACES_ENABLED";
 
@@ -104,6 +114,14 @@ impl OTLPConfigs {
             .ok()
             .and_then(|s| s.parse::<f64>().ok())
             .unwrap_or(cfg.exporter_rate_base);
+        cfg.metric_exporter_rate_base = std::env::var(OTLP_METRIC_EXPORTER_RATE_BASE_ENV_KEY)
+            .ok()
+            .and_then(|s| s.parse::<f64>().ok())
+            .unwrap_or(cfg.metric_exporter_rate_base);
+        cfg.trace_exporter_rate_base = std::env::var(OTLP_TRACE_EXPORTER_RATE_BASE_ENV_KEY)
+            .ok()
+            .and_then(|s| s.parse::<f64>().ok())
+            .unwrap_or(cfg.trace_exporter_rate_base);
         cfg.metrics_enabled = std::env::var(OTLP_METRICS_ENABLED_ENV_KEY)
             .ok()
             .and_then(|s| s.parse::<bool>().ok())
@@ -126,6 +144,8 @@ impl Default for OTLPConfigs {
             exporter_timeout: Duration::from_secs(60),
             exporter_interval: Duration::from_secs(60),
             exporter_rate_base: 0.8,
+            metric_exporter_rate_base: 0.8,
+            trace_exporter_rate_base: 0.8,
             metrics_enabled: false,
             traces_enabled: false,
         }
